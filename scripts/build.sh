@@ -11,11 +11,17 @@ apt install -y net-tools iproute2 iptables nano wget gnutls-bin certbot expect b
 # START
 
 wget -P /opt/ https://www.infradead.org/ocserv/download/ocserv-1.2.4.tar.xz
-tar -xvf /opt/ocserv-1.2.4.tar.xz -C /opt/
+tar -xf /opt/ocserv-1.2.4.tar.xz -C /opt/
 cd /opt/ocserv-1.2.4
 
+echo "CONFIGURE & MAKE.."
+
 ./configure --prefix= --enable-oidc-auth
-make && make install
+make
+echo "MAKE COMPLETE!"
+
+make install
+echo "INSTALL COMPLETE!"
 
 # cp doc/sample.config /etc/ocserv/ocserv.conf
 cp doc/sample.passwd doc/sample.otp doc/profile.xml /etc/ocserv/
@@ -30,7 +36,7 @@ elif ! grep -q "^net.ipv4.ip_forward=1" /etc/sysctl.conf;
 fi
 sysctl -p
 
-cd /etc/ocserv/ssl/
+cd /etc/ocserv/ssl/ || exit
 certtool --generate-privkey --outfile ca-privkey.pem
 certtool --generate-self-signed --load-privkey ca-privkey.pem --template ca.tmpl --outfile ca-cert.pem
 certtool --generate-privkey --outfile server-privkey.pem
